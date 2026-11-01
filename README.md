@@ -15,8 +15,13 @@ Github와 Codyssey를 연동하기 위해 만들어진 Repository입니다.
   <summary>2. 터미널 조작 로그 기록</summary>
 
   - 현재 위치 확인
+    ```bash
+    $ pwd
+    /mnt/c/Users/HYUKJOO
+    ```
   - 목록 확인(숨김 파일 포함)
   - 이동
+    ```bash
   - 생성
   - 복사
   - 이동/이름변경
