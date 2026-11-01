@@ -355,6 +355,7 @@ exec 명령어는 이미 실행 중인 컨테이너 내부에 완전히 독립�
 <summary>8. 포트 매핑 및 접속 증거</summary>
 
 - 브라우저 접속 화면 또는 curl 응답 첨부
+<img width="940" height="262" alt="image" src="https://github.com/user-attachments/assets/59aeabaf-7f58-4745-8ddd-04174b91faa1" />
 
   ```bash
   $ sudo docker ps
@@ -391,7 +392,6 @@ exec 명령어는 이미 실행 중인 컨테이너 내부에 완전히 독립�
   Hello Codyssey Volume Persistence
   ```
 
-- 생성/연결/검증 절차 기록
 </details>
 
 <details>
@@ -408,19 +408,53 @@ exec 명령어는 이미 실행 중인 컨테이너 내부에 완전히 독립�
   init.defaultbranch=main
   ```
 - GitHub 저장소 연동 증거 첨부
+  ```bash
+  $ git push -u origin main
+  Username for 'https://github.com': notionai5929-cyber
+  Password for 'https://notionai5929-cyber@github.com':
+  오브젝트 나열하는 중: 10, 완료.
+  오브젝트 개수 세는 중: 100% (10/10), 완료.
+
+  $ git remote -v
+  origin  https://github.com/notionai5929-cyber/ai-codyssey.git (fetch)
+  origin  https://github.com/notionai5929-cyber/ai-codyssey.git (push)  
+  ```
+  <img width="562" height="51" alt="image" src="https://github.com/user-attachments/assets/710ec920-bd41-4e84-8e01-0a5e60d583ad" />
+
 </details>
 
 <details>
 <summary>11. 보안 및 개인정보 보호</summary>
 
 - 민감 정보(토큰, 비밀번호, 개인키 등) 마스킹 처리
+  GitHub 연동 시 사용된 개인 액세스 토큰(PAT) 및 계정 비밀번호는 문서 및 로그에 일체 기록하지 않음
+  노출 방지를 위해 마스킹 처리 규칙을 준수
 - 노출 의심 시 즉시 제거 및 재발급 수행
+- 
 </details>
 
-# 검증 방법
-
 # 트러블슈팅
+1. 포트 충돌 및 기존 컨테이너 이름 중복 문제
+  Troubleshooting : chmod 755 명령어를 이용해 실행 권한을 부여
+                    ls -al로 확인해 보면 권한이 -rwxrwxrwx 그대로 유지된 채 전혀 바뀌지 않는 현상
+   cause : WSL 우분투 환경에서 작업 중이지만, 파일이 저장된 실제 물리적 공간은 윈도우 파일 시스템
+           리눅스의 권한 체계(rwx)가 기본적으로 무시되고 윈도우 규칙에 따라 전체 권한으로 고정
+   solve : 윈도우 드라이브 마운트 시 리눅스식 파일 권한(메타데이터)을 읽을 수 있도록 WSL 설정 파일인 /etc/wsl.conf를 수정
+   ```bash
+   sudo nano /etc/wsl.conf
 
-```
+   [automount]
+   options = "metadata"
+   ```
+2. WSL(Windows Subsystem for Linux) 환경에서의 파일 권한(chmod) 미적용 문제
+   Troubleshooting : 도커 컨테이너를 실행할 때 sudo docker run -d -p 8080:80 --name my-web nginx 명령어를 입력하자,
+                     데몬 에러(Daemon Error)가 발생
+   cause : 도커는 하나의 포트에 하나의 프로세스만 연결할 수 있으며,
+           컨테이너 이름은 시스템 내에서 고유해야 하므로 이전에 띄웠던 잔여 컨테이너가 남아있으면
+           새로운 컨테이너를 같은 이름과 포트로 띄울 수 없습니다.
+   solve : 실행 중이거나 정지된 모든 컨테이너를 강제로 정리하고 포트를 확보하는 일괄 삭제 명령어를 사용
+   ```bash
+   sudo docker rm -f $(sudo docker ps -aq)
+   ```
+   충돌 없는 고유한 이름과 포트 매핑(-p 8081:80 --name my-web2)을 지정하여 정상적으로 백그라운드 구동
 
-```
