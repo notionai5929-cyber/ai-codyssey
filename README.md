@@ -69,6 +69,8 @@ Github와 Codyssey를 연동하기 위해 만들어진 Repository입니다.
 - 선택한 베이스 이미지/Dockerfile 기록
 - 적용한 커스텀 목적 간단 요약
 - 빌드/실행 명령 및 결과(출력/스크린샷) 포함
+  <img width="937" height="287" alt="image" src="https://github.com/user-attachments/assets/9bd49294-c8ac-4760-9ff8-3e6a23650d4a" />
+
 </details>
 
 <details>
