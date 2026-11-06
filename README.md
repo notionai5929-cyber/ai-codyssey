@@ -226,6 +226,14 @@ Github와 Codyssey를 연동하기 위해 만들어진 Repository입니다.
   Digest: sha256:5ab5b0b01097420873a3f3330f44248e34a3c2a3e8d5ee30658aeae8cb7435da
   Status: Image is up to date for nginx:latest
   docker.io/library/nginx:latest
+
+  $ sudo docker ps -a
+  CONTAINER ID   IMAGE         COMMAND                   CREATED          STATUS                          PORTS     NAMES
+  7a5d98c515c5   nginx         "/docker-entrypoint.…"   3 minutes ago    Exited (0) About a minute ago             my-web
+  6192f0216a20   ubuntu        "bash"                    16 minutes ago   Exited (0) 16 minutes ago                 suspicious_meninsky
+  3deb1dbc48b9   hello-world   "/hello"                  21 minutes ago   Exited (0) 21 minutes ago                 xenodochial_euclid
+  da93006343b2   nginx         "/docker-entrypoint.…"   5 hours ago      Exited (0) 5 hours ago                    my-web2
+  bcfa4930008d   nginx         "/docker-entrypoint.…"   5 hours ago      Exited (0) 5 hours ago                    my-web1
   ```
   <img width="1362" height="138" alt="image" src="https://github.com/user-attachments/assets/25d3e746-a303-45c0-a4b1-a47f1c2f80cf" />
 
@@ -247,7 +255,11 @@ Github와 Codyssey를 연동하기 위해 만들어진 Repository입니다.
   CONTAINER ID   IMAGE     COMMAND                   CREATED          STATUS          PORTS                                     NAMES
   7a5d98c515c5   nginx     "/docker-entrypoint.…"   20 seconds ago   Up 20 seconds   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   my-web
   ```
-
+  
+- Docker 이미지와 컨테이너의 개념적 차이
+  **Docker 이미지 (Image):** 프로그램 실행에 필요한 모든 파일과 설정을 묶어놓은 **정적인 설계도(붕어빵 틀)**입니다. 한 번 생성(Build)되면 변하지 않으며 디스크 용량만 차지합니다.
+  **Docker 컨테이너 (Container):** 이미지를 바탕으로 메모리 등의 자원을 할당받아 실제로 동작하는 **격리된 실행 단위(구워진 붕어빵)**입니다. 하나의 이미지에서 여러 개의 컨테이너를 생성하여 동시에 독립적으로 실행할 수 있습니다.  
+  
   ```bash
   //중지 및 목록 확인
    sudo docker stop my-web
