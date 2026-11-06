@@ -85,7 +85,8 @@ Github와 Codyssey를 연동하기 위해 만들어진 Repository입니다.
 <summary>3. 권한 실습 및 증거 기록</summary>
 
 - 권한 확인/변경 명령 전후 비교
-
+숫자별 의미 : 7은 소유자가 읽기(4)+쓰기(2)+실행(1)의 모든 권한을 가짐
+              5는 그룹 및 기타 사용자가 읽기(4)+실행(1) 권한만을 가짐
   ```bash
   $ ls -al
   -rwxrwxrwx 1 hyukjoo hyukjoo 0 Oct 31 23:42 hello.sh
@@ -117,20 +118,65 @@ Github와 Codyssey를 연동하기 위해 만들어진 Repository입니다.
   ```bash
   $ docker info
   Client: Docker Engine - Community
-  Version:    29.9.2
-  Context:    default
-  Debug Mode: false
-  Plugins:
-  buildx: Docker Buildx (Docker Inc.)
-    Version:  v0.38.1
-    Path:     /usr/libexec/docker/cli-plugins/docker-buildx
-  compose: Docker Compose (Docker Inc.)
-    Version:  v5.6.1
-    Path:     /usr/libexec/docker/cli-plugins/docker-compose
-
-
+   Version:    29.9.2
+   Context:    default
+   Debug Mode: false
+   Plugins:
+    buildx: Docker Buildx (Docker Inc.)
+      Version:  v0.38.1
+      Path:     /usr/libexec/docker/cli-plugins/docker-buildx
+    compose: Docker Compose (Docker Inc.)
+      Version:  v5.6.1
+      Path:     /usr/libexec/docker/cli-plugins/docker-compose
+  
   Server:
-  permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+   Containers: 1
+    Running: 1
+    Paused: 0
+    Stopped: 0
+   Images: 4
+   Server Version: 29.9.2
+   Storage Driver: overlayfs
+    driver-type: io.containerd.snapshotter.v1
+   Logging Driver: json-file
+   Cgroup Driver: systemd
+   Cgroup Version: 2
+   Plugins:
+    Volume: local
+    Network: bridge host ipvlan macvlan null overlay
+    Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+   CDI spec directories:
+    /etc/cdi
+    /var/run/cdi
+   Swarm: inactive
+   Runtimes: io.containerd.runc.v2 runc
+   Default Runtime: runc
+   Init Binary: docker-init
+   containerd version: b7a25261e029d68978bbf290df0a62fc819b3c51
+   runc version: v1.5.2-0-g29dd3dc2
+   init version: de40ad0
+   Security Options:
+    seccomp
+     Profile: builtin
+    cgroupns
+   Kernel Version: 6.18.54.1-microsoft-standard-WSL2
+   Operating System: Ubuntu 26.04.1 LTS
+   OSType: linux
+   Architecture: x86_64
+   CPUs: 12
+   Total Memory: 6.692GiB
+   Name: KWON
+   ID: 64848615-f200-4e8e-a7c4-15784a69e40a
+   Docker Root Dir: /var/lib/docker
+   Debug Mode: false
+   Experimental: false
+   Insecure Registries:
+    127.0.0.0/8
+    ::1/128
+   Live Restore Enabled: false
+   Firewall Backend: iptables
+    EnableUserlandProxy: true
+    UserlandProxyPath: /usr/bin/docker-proxy
   ```
 
   ```bash
@@ -181,6 +227,8 @@ Github와 Codyssey를 연동하기 위해 만들어진 Repository입니다.
   Status: Image is up to date for nginx:latest
   docker.io/library/nginx:latest
   ```
+  <img width="1362" height="138" alt="image" src="https://github.com/user-attachments/assets/25d3e746-a303-45c0-a4b1-a47f1c2f80cf" />
+
   ```bash
   $ sudo docker images
                                                                                                 i Info →   U  In Use
@@ -278,6 +326,13 @@ exec 명령어는 이미 실행 중인 컨테이너 내부에 완전히 독립�
   # 1. 커스텀 이미지 제작용 디렉토리 생성 및 이동
   $ mkdir -p ~/codyssey/app && cd ~/codyssey/app
 
+  프로젝트 디렉토리 구조 및 역할
+
+  명령어 `mkdir -p ~/codyssey/app`를 통해 생성된 프로젝트의 전체 디렉토리 구조와 역할은 다음과 같습니다.
+  
+  `~/codyssey/` : (프로젝트 루트 디렉토리) 전체 프로젝트 파일과 설정(예: README.md, docker-compose.yml 등)을 최상위에서 관리하는 공간입니다.
+  `~/codyssey/app/` : (앱 디렉토리) 실제 실행될 웹 애플리케이션의 소스 코드(예: index.html, 소스 파일 등)나 Dockerfile이 위치하게 될 전용 작업 공간입니다.
+
   # 2. 커스텀 포인트: 내 PC의 정적 웹 파일(index.html) 생성
   $ mkdir site
   $ echo "<h1>Hello Codyssey Custom Web</h1>" > site/index.html
@@ -356,6 +411,7 @@ exec 명령어는 이미 실행 중인 컨테이너 내부에 완전히 독립�
 
 - 브라우저 접속 화면 또는 curl 응답 첨부
 <img width="940" height="262" alt="image" src="https://github.com/user-attachments/assets/59aeabaf-7f58-4745-8ddd-04174b91faa1" />
+포트 매핑(포트 포워딩)이 필요한 이유 : Docker는 보안과 독립성을 위해 '네트워크 네임스페이스(Network Namespace)' 기술을 사용하여 컨테이너의 네트워크 환경을 호스트(로컬 PC)와 완전히 격리합니다. 따라서 호스트의 특정 포트(예: 8080)로 들어오는 외부 요청을 격리된 컨테이너 내부의 포트(예: 80)로 전달(포워딩)해주는 통로를 명시적으로 연결해 주어야만 외부에서 웹 서버에 정상적으로 접근할 수 있습니다.
 
   ```bash
   $ sudo docker ps
@@ -391,6 +447,33 @@ exec 명령어는 이미 실행 중인 컨테이너 내부에 완전히 독립�
   $ sudo docker exec -it vol-test2 bash -lc "cat /data/hello.txt"
   Hello Codyssey Volume Persistence
   ```
+- 호스트 및 컨테이너 경로 선택 기준과 재현성
+  호스트 경로 선택 기준 (예: `/mnt/c/Users/HYUKJOO`)
+    **선택 사례:** 소스 코드를 편집하거나, Git으로 형상 관리를 하거나, `Dockerfile`을 이용해 이미지를 빌드(`docker build`)할 때 선택합니다.
+    **선택 이유:** 로컬 PC에서 개발 및 수정 작업을 직접 수행하고 그 파일들을 영구적으로 관리하기 위해서입니다.
+  
+  컨테이너 내부 경로 선택 기준 (예: `/usr/share/nginx/html`)
+    **선택 사례:** 애플리케이션(예: Nginx 웹 서버)을 실행(`docker run`)하여 서비스를 구동할 때 설정 파일이나 구동에 필요한 정적 파일(HTML 등)을 배치할 때 선택합니다.
+    **선택 이유 (재현성 확보):** 호스트의 환경에 구애받지 않고, 어느 컴퓨터(서버)에서 실행하더라도 동일한 위치에서 동일한 방식으로 구동되는 일관성(재현성)을 보장하기 위해서입니다.
+  **결론:** 호스트 경로에서 코드를 작성/관리하고, 이 코드를 컨테이너 내부 경로로 바인드 마운트(`-v`)하거나 이미지 빌드 시 복사(`COPY`)함으로써, 로컬 개발의 편의성과 컨테이너 환경의 독립적 실행(재현성)을 모두 확보할 수 있습니다.
+
+  - 바인드 마운트 사용 예시와 간단한 백업 권장 절차
+    도커 컨테이너가 삭제되더라도 데이터를 안전하게 유지하기 위해 두 가지 방식을 혼용하여 사용합니다.
+
+#### 1. 바인드 마운트 (Bind Mount) 사용 예시
+*   **목적:** 개발 중인 소스 코드의 실시간 변경 사항 반영
+*   **실행 명령어:**
+    ```bash
+    $sudo docker run -d -p 8080:80 -v$PWD:/usr/share/nginx/html --name my-web nginx
+    ```
+    *   `-v $PWD:/usr/share/nginx/html`: 호스트의 현재 경로(`$PWD`)를 컨테이너 내부의 Nginx 웹 루트 디렉토리(`/usr/share/nginx/html`)와 바인드 마운트합니다.
+
+#### 2. 데이터 손실 대비 백업 및 복구 권장 절차
+*   **목적:** 도커 볼륨(Docker Volume)에 저장된 핵심 데이터(예: DB)의 주기적인 안전 확보
+*   **간단한 백업 권장 절차:**
+    1.  중요한 데이터를 저장하는 컨테이너는 반드시 도커 볼륨을 생성(`docker volume create`)하여 연결(`-v 볼륨이름:컨테이너경로`)합니다.
+    2.  볼륨 데이터를 안전하게 백업하기 위해 임시 컨테이너를 생성하고, 해당 볼륨을 연결하여 데이터를 `tar` 압축 파일 형태로 호스트 PC로 추출하여 정기적으로 저장합니다.
+    3.  복구가 필요할 때는 새 볼륨을 생성하고, 백업해둔 `tar` 파일을 임시 컨테이너를 통해 새 볼륨에 풀어넣어 데이터를 복원합니다.
 
 </details>
 
@@ -440,6 +523,7 @@ exec 명령어는 이미 실행 중인 컨테이너 내부에 완전히 독립�
    cause : WSL 우분투 환경에서 작업 중이지만, 파일이 저장된 실제 물리적 공간은 윈도우 파일 시스템
            리눅스의 권한 체계(rwx)가 기본적으로 무시되고 윈도우 규칙에 따라 전체 권한으로 고정
    solve : 윈도우 드라이브 마운트 시 리눅스식 파일 권한(메타데이터)을 읽을 수 있도록 WSL 설정 파일인 /etc/wsl.conf를 수정
+           
    ```bash
    sudo nano /etc/wsl.conf
 
@@ -452,9 +536,22 @@ exec 명령어는 이미 실행 중인 컨테이너 내부에 완전히 독립�
    cause : 도커는 하나의 포트에 하나의 프로세스만 연결할 수 있으며,
            컨테이너 이름은 시스템 내에서 고유해야 하므로 이전에 띄웠던 잔여 컨테이너가 남아있으면
            새로운 컨테이너를 같은 이름과 포트로 띄울 수 없습니다.
-   solve : 실행 중이거나 정지된 모든 컨테이너를 강제로 정리하고 포트를 확보하는 일괄 삭제 명령어를 사용
+   solve : 컨테이너를 무작정 삭제하기 전에 `ss` 명령어를 사용하여 현재 8080 포트를 점유하고 있는 프로세스를 확인합니다.
+           실행 중이거나 정지된 모든 컨테이너를 강제로 정리하고 포트를 확보하는 일괄 삭제 명령어를 사용
+           
+           
    ```bash
+   $ sudo ss -tulpn | grep 8080
    sudo docker rm -f $(sudo docker ps -aq)
    ```
    충돌 없는 고유한 이름과 포트 매핑(-p 8081:80 --name my-web2)을 지정하여 정상적으로 백그라운드 구동
+4. Docker 데몬 동작 여부 점검
+  Troubleshooting: 일반 사용자로 `docker info` 실행 시 `permission denied` 오류 발생으로 데몬 상태 확인 불가
+  solve : 시스템 데몬 제어 권한을 빌려오기 위해 관리자 권한 명령어인 `sudo`를 앞에 붙여 실행하여 성공적으로 정보를 출력함.
+
+  ```bash
+  $ sudo docker info
+  ```
+  <img width="696" height="402" alt="image" src="https://github.com/user-attachments/assets/c5a7d277-b2f1-4c88-8409-28c85a72ddc2" />
+
 
